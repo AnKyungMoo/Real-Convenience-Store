@@ -4,7 +4,7 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.km.real_convenience_store.databinding.ItemConvenienceMerchandiseBinding
+import com.km.real_convenience_store.databinding.ItemConvenienceProductBinding
 import com.km.real_convenience_store.model.ProductUiModel
 
 class ProductSearchAdapter: RecyclerView.Adapter<ProductSearchViewHolder>() {
@@ -12,7 +12,7 @@ class ProductSearchAdapter: RecyclerView.Adapter<ProductSearchViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductSearchViewHolder {
         return ProductSearchViewHolder(
-            ItemConvenienceMerchandiseBinding.inflate(
+            ItemConvenienceProductBinding.inflate(
                 parent.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
             )
         )
@@ -39,7 +39,7 @@ class ProductSearchAdapter: RecyclerView.Adapter<ProductSearchViewHolder>() {
 }
 
 class ProductSearchViewHolder(
-    private val binding: ItemConvenienceMerchandiseBinding
+    private val binding: ItemConvenienceProductBinding
 ) : RecyclerView.ViewHolder(binding.root) {
     fun onBind(item: ProductUiModel) {
         binding.tvConvenienceBrand.text = item.storeName
