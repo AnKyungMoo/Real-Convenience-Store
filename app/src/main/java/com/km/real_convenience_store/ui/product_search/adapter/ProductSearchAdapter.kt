@@ -1,10 +1,13 @@
 package com.km.real_convenience_store.ui.product_search.adapter
 
 import android.content.Context
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.km.real_convenience_store.databinding.ItemConvenienceProductBinding
+import com.km.real_convenience_store.main.DetailActivity
 import com.km.real_convenience_store.model.ProductUiModel
 
 class ProductSearchAdapter: RecyclerView.Adapter<ProductSearchViewHolder>() {
@@ -46,5 +49,11 @@ class ProductSearchViewHolder(
         binding.tvSaleType.text = item.saleType
         /* TODO: 글라이드 붙여서 합시다 */
         binding.ivProduct
+
+        itemView.setOnClickListener {
+            val intent = Intent(itemView.context, DetailActivity::class.java)
+            intent.putExtra("item", item)
+            itemView.context.startActivity(intent)
+        }
     }
 }

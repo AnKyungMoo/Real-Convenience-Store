@@ -29,30 +29,28 @@
                 android:layout_height="match_parent">
 
                 <TextView
-                    android:id="@+id/tv_product_name"
+                    android:id="@+id/tv_convenience_brand"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
                     android:layout_marginTop="22dp"
-                    android:text="브랜드명"
                     android:textColor="@color/black"
                     android:textSize="14sp"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
-                    android:id="@+id/tv_product_description"
+                    android:id="@+id/tv_product_name"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="6dp"
                     android:layout_marginEnd="20dp"
-                    android:text="testtesttesttesttesttesttesttesttesttesttesttesttest"
                     android:textColor="@color/black"
                     android:textSize="16sp"
                     android:textStyle="bold"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="@+id/tv_product_name"
-                    app:layout_constraintTop_toBottomOf="@+id/tv_product_name" />
+                    app:layout_constraintStart_toStartOf="@+id/tv_convenience_brand"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_convenience_brand" />
 
                 <TextView
                     android:id="@+id/tv_product_price"
@@ -63,8 +61,8 @@
                     android:textColor="@color/black"
                     android:textSize="24sp"
                     android:textStyle="bold"
-                    app:layout_constraintStart_toStartOf="@+id/tv_product_description"
-                    app:layout_constraintTop_toBottomOf="@+id/tv_product_description" />
+                    app:layout_constraintStart_toStartOf="@+id/tv_product_name"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_product_name" />
 
                 <TextView
                     android:id="@+id/tv_product_sale_type"
@@ -81,31 +79,7 @@
                     android:textSize="16sp"
                     app:layout_constraintBottom_toBottomOf="@+id/tv_product_price"
                     app:layout_constraintStart_toEndOf="@+id/tv_product_price"
-                    app:layout_constraintTop_toBottomOf="@+id/tv_product_description" />
-
-                <TextView
-                    android:id="@+id/tv_event_period"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="11dp"
-                    android:layout_marginEnd="10dp"
-                    android:text="@string/event_period"
-                    android:textColor="@color/black"
-                    android:textSize="14sp"
-                    app:layout_constraintStart_toStartOf="@+id/tv_product_price"
-                    app:layout_constraintTop_toBottomOf="@+id/tv_product_price" />
-
-                <TextView
-                    android:id="@+id/tv_event_period_date"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:text="2022년 06월"
-                    android:textColor="@color/black"
-                    android:textSize="14sp"
-                    app:layout_constraintBottom_toBottomOf="@+id/tv_event_period"
-                    app:layout_constraintStart_toEndOf="@+id/tv_event_period"
-                    app:layout_constraintTop_toTopOf="@+id/tv_event_period" />
+                    app:layout_constraintTop_toBottomOf="@+id/tv_product_name" />
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/cl_ad"
@@ -117,7 +91,7 @@
                     android:background="@color/black"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/tv_event_period" />
+                    app:layout_constraintTop_toBottomOf="@+id/tv_product_sale_type" />
 
                 <TextView
                     android:id="@+id/tv_compare_product"
