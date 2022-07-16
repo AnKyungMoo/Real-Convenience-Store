@@ -30,7 +30,7 @@ class ProductSearchAdapter: RecyclerView.Adapter<ProductSearchViewHolder>() {
                 storeName = "cu$it",
                 eventPeriod = "1~5",
                 productImageUrl = "",
-                description = "설명설명cu",
+                description = "설명설명cu설명설명cu설명설명cu설명설명cu설명설명cu설명설명cu설명설명cu설명설명cu설명설명cu설명설명cu설명설명cu설명설명cu설명설명cu",
                 price = "${2000*it}"
             )
         }
