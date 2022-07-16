@@ -1,4 +1,11 @@
 package com.km.real_convenience_store.dto.local
 
-class FavoriteProductEntity {
-}
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+
+@Entity(primaryKeys = ["title", "store"])
+data class FavoriteProductEntity(
+    @ColumnInfo(name = "title") val title: String,
+    @ColumnInfo(name = "store") val store: String,
+    @ColumnInfo(name = "image_url") val imageUrl: String? = null,
+)
