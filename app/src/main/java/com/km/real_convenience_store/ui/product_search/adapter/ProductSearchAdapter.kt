@@ -1,11 +1,10 @@
 package com.km.real_convenience_store.ui.product_search.adapter
 
-import android.content.Context
 import android.content.Intent
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.km.real_convenience_store.databinding.ItemConvenienceProductBinding
 import com.km.real_convenience_store.main.DetailActivity
 import com.km.real_convenience_store.model.ProductUiModel
@@ -18,7 +17,9 @@ class ProductSearchAdapter: RecyclerView.Adapter<ProductSearchViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductSearchViewHolder {
         return ProductSearchViewHolder(
             ItemConvenienceProductBinding.inflate(
-                parent.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+                LayoutInflater.from(parent.context),
+                parent,
+                false
             )
         )
     }
@@ -36,6 +37,7 @@ class ProductSearchAdapter: RecyclerView.Adapter<ProductSearchViewHolder>() {
 
     fun clearProducts() {
         _products.clear()
+        notifyDataSetChanged()
     }
 }
 
@@ -47,8 +49,7 @@ class ProductSearchViewHolder(
         binding.tvConvenienceBrand.text = item.storeName
         binding.tvProductPrice.text = item.price
         binding.tvSaleType.text = item.saleType
-        /* TODO: 글라이드 붙여서 합시다 */
-        binding.ivProduct
+        Glide.with(binding.ivProduct.context).load(item.productImageUrl).into(binding.ivProduct)
 
         itemView.setOnClickListener {
             val intent = Intent(itemView.context, DetailActivity::class.java)

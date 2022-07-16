@@ -38,7 +38,7 @@ class ProductBrandActivity: AppCompatActivity() {
     }
 
     private fun setConvenienceStoreName() {
-        convenienceStoreName = intent.extras?.getString("", "") ?: ""
+        convenienceStoreName = intent.extras?.getString(CONVENIENCE_STORE_NAME, "") ?: ""
     }
 
     private fun initViews() {
@@ -176,5 +176,9 @@ class ProductBrandActivity: AppCompatActivity() {
                 it.toProductUiModel()
             }
         }
+    }
+
+    companion object {
+        const val CONVENIENCE_STORE_NAME = "CONVENIENCE_STORE_NAME"
     }
 }
