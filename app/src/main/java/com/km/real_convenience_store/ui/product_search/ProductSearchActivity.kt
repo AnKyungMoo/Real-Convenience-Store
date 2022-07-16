@@ -24,6 +24,7 @@ class ProductSearchActivity : AppCompatActivity() {
 
     private var saleType: String? = null
     private var currentPage: Int = 1
+    private var needLoadMore: Boolean = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,11 +39,12 @@ class ProductSearchActivity : AppCompatActivity() {
             adapter = productSearchAdapter
             layoutManager = LinearLayoutManager(this@ProductSearchActivity)
 
-            addOnScrollListener(object: RecyclerView.OnScrollListener() {
+            addOnScrollListener(object : RecyclerView.OnScrollListener() {
                 override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                     super.onScrolled(recyclerView, dx, dy);
                     val scrolledAdapter = recyclerView.adapter ?: return
-                    val lastVisibleItemPosition = (recyclerView.layoutManager as LinearLayoutManager).findLastVisibleItemPosition()
+                    val lastVisibleItemPosition =
+                        (recyclerView.layoutManager as LinearLayoutManager).findLastVisibleItemPosition()
                     val itemTotalCount = scrolledAdapter.itemCount - 1
 
                     if (lastVisibleItemPosition == itemTotalCount) {
@@ -56,10 +58,13 @@ class ProductSearchActivity : AppCompatActivity() {
         binding.btnSearch.setOnClickListener {
             productSearchAdapter.clearProducts()
             searchAndApplyProducts()
+            needLoadMore = true
         }
 
         binding.btnOnePlusOne.setOnClickListener {
             resetSaleTypeButtonBackground()
+            productSearchAdapter.clearProducts()
+            needLoadMore = true
             currentPage = 1
             if (saleType != "1+1") {
                 saleType = "1+1"
@@ -67,9 +72,12 @@ class ProductSearchActivity : AppCompatActivity() {
             } else {
                 saleType = null
             }
+            searchAndApplyProducts()
         }
         binding.btnTwoPlusOne.setOnClickListener {
             resetSaleTypeButtonBackground()
+            productSearchAdapter.clearProducts()
+            needLoadMore = true
             currentPage = 1
             if (saleType != "2+1") {
                 saleType = "2+1"
@@ -77,9 +85,12 @@ class ProductSearchActivity : AppCompatActivity() {
             } else {
                 saleType = null
             }
+            searchAndApplyProducts()
         }
         binding.btnThreePlusOne.setOnClickListener {
             resetSaleTypeButtonBackground()
+            productSearchAdapter.clearProducts()
+            needLoadMore = true
             currentPage = 1
             if (saleType != "3+1") {
                 saleType = "3+1"
@@ -87,9 +98,12 @@ class ProductSearchActivity : AppCompatActivity() {
             } else {
                 saleType = null
             }
+            searchAndApplyProducts()
         }
         binding.btnFourPlusOne.setOnClickListener {
             resetSaleTypeButtonBackground()
+            productSearchAdapter.clearProducts()
+            needLoadMore = true
             currentPage = 1
             if (saleType != "4+1") {
                 saleType = "4+1"
@@ -97,10 +111,13 @@ class ProductSearchActivity : AppCompatActivity() {
             } else {
                 saleType = null
             }
+            searchAndApplyProducts()
         }
     }
 
     private fun searchAndApplyProducts() {
+        if (!needLoadMore) return
+
         CoroutineScope(Dispatchers.Main).launch {
             val products: List<ProductUiModel> =
                 searchProducts(binding.editProductSearch.text.toString())
@@ -134,16 +151,23 @@ class ProductSearchActivity : AppCompatActivity() {
         (itemView as TextView).setTextColor(Color.WHITE)
     }
 
-    private suspend fun searchProducts(productName: String) =
-        withContext(Dispatchers.Default) {
-            NetworkModule.convenienceStoreApi.getProducts(
+    private suspend fun searchProducts(productName: String): List<ProductUiModel> {
+        return withContext(Dispatchers.Default) {
+            val productDto = NetworkModule.convenienceStoreApi.getProducts(
                 title = productName,
                 saleType = saleType,
                 page = currentPage,
-            ).data.map {
+            )
+
+            if (currentPage == productDto.pageData.maxPage) {
+                needLoadMore = false
+            }
+
+            productDto.data.map {
                 it.toProductUiModel()
             }
         }
+    }
 }
 
 fun ProductDTO.toProductUiModel() =
