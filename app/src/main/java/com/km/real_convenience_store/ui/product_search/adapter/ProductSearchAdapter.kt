@@ -8,7 +8,9 @@ import com.km.real_convenience_store.databinding.ItemConvenienceProductBinding
 import com.km.real_convenience_store.model.ProductUiModel
 
 class ProductSearchAdapter: RecyclerView.Adapter<ProductSearchViewHolder>() {
-    private val products = mutableListOf<ProductUiModel>()
+    val products: List<ProductUiModel>
+        get() = _products
+    private val _products = mutableListOf<ProductUiModel>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductSearchViewHolder {
         return ProductSearchViewHolder(
@@ -19,15 +21,18 @@ class ProductSearchAdapter: RecyclerView.Adapter<ProductSearchViewHolder>() {
     }
 
     override fun onBindViewHolder(holder: ProductSearchViewHolder, position: Int) {
-        holder.onBind(products[position])
+        holder.onBind(_products[position])
     }
 
-    override fun getItemCount(): Int = products.size
+    override fun getItemCount(): Int = _products.size
 
     fun setProducts(products: List<ProductUiModel>) {
-        this.products.clear()
-        this.products.addAll(products)
+        _products.addAll(products)
         notifyDataSetChanged()
+    }
+
+    fun clearProducts() {
+        _products.clear()
     }
 }
 

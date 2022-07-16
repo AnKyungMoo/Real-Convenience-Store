@@ -32,10 +32,14 @@ class ProductSearchActivity : AppCompatActivity() {
         }
 
         binding.btnSearch.setOnClickListener {
+            productSearchAdapter.clearProducts()
+
             CoroutineScope(Dispatchers.Main).launch {
                 val products: List<ProductUiModel> =
                     searchProducts(binding.editProductSearch.text.toString())
                 productSearchAdapter.setProducts(products)
+                binding.tvSearchResultCount.text =
+                    "검색결과".plus("${productSearchAdapter.itemCount}").plus("건")
             }
         }
     }
