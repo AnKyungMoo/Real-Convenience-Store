@@ -2,6 +2,7 @@ package com.km.real_convenience_store.main
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.bumptech.glide.Glide
 import com.km.real_convenience_store.databinding.ActivityDetailBinding
 import com.km.real_convenience_store.model.ProductUiModel
 
@@ -17,7 +18,7 @@ class DetailActivity: AppCompatActivity() {
         val item = intent.getParcelableExtra<ProductUiModel>("item")
         if (item != null) {
 
-//            binding.ivProductImage = item.productImageUrl
+            Glide.with(binding.ivProductImage.context).load(item.productImageUrl).into(binding.ivProductImage);
             binding.tvConvenienceBrand.text = item.storeName
             binding.tvProductName.text = item.productName
             binding.tvProductPrice.text = item.price +"원"
