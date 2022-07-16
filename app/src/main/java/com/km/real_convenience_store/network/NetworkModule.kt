@@ -1,5 +1,7 @@
 package com.km.real_convenience_store.network
 
+import com.facebook.flipper.plugins.network.FlipperOkhttpInterceptor
+import com.facebook.flipper.plugins.network.NetworkFlipperPlugin
 import com.km.real_convenience_store.network.service.ConvenienceStoreService
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -17,7 +19,11 @@ object NetworkModule {
             .create(ConvenienceStoreService::class.java)
     }
 
-    private val okHttpClient =
-        OkHttpClient.Builder().addInterceptor(HttpLoggingInterceptor()).build()
+    val networkFlipperPlugin = NetworkFlipperPlugin()
 
+    private val okHttpClient = OkHttpClient
+        .Builder()
+        .addInterceptor(HttpLoggingInterceptor())
+        .addNetworkInterceptor(FlipperOkhttpInterceptor(networkFlipperPlugin))
+        .build()
 }

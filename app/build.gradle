@@ -1,6 +1,8 @@
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
+    id 'kotlin-android'
+    id 'kotlin-kapt'
 }
 
 android {
@@ -51,4 +53,16 @@ dependencies {
 
     // coroutine
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.2"
+
+    // room
+    def room_version = '2.4.2'
+    implementation "androidx.room:room-runtime:$room_version"
+    kapt "androidx.room:room-compiler:$room_version"
+    implementation "androidx.room:room-ktx:$room_version"
+
+    def flipper_version = '0.145.0'
+    debugImplementation "com.facebook.flipper:flipper:$flipper_version"
+    debugImplementation 'com.facebook.soloader:soloader:0.10.3'
+    releaseImplementation "com.facebook.flipper:flipper-noop:$flipper_version"
+    debugImplementation "com.facebook.flipper:flipper-network-plugin:$flipper_version"
 }

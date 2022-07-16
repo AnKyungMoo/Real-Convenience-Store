@@ -1,4 +1,4 @@
-package com.km.real_convenience_store.dto
+package com.km.real_convenience_store.dto.remote
 
 import com.google.gson.annotations.SerializedName
 
