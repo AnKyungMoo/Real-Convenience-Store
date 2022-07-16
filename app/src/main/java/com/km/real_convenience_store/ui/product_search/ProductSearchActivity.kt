@@ -6,6 +6,7 @@ import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.km.real_convenience_store.R
 import com.km.real_convenience_store.databinding.ActivityProductSearchBinding
 import com.km.real_convenience_store.dto.remote.ProductDTO
@@ -22,6 +23,7 @@ class ProductSearchActivity : AppCompatActivity() {
     private val productSearchAdapter = ProductSearchAdapter()
 
     private var saleType: String? = null
+    private var currentPage: Int = 1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,22 +37,30 @@ class ProductSearchActivity : AppCompatActivity() {
         binding.rvProducts.apply {
             adapter = productSearchAdapter
             layoutManager = LinearLayoutManager(this@ProductSearchActivity)
+
+            addOnScrollListener(object: RecyclerView.OnScrollListener() {
+                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                    super.onScrolled(recyclerView, dx, dy);
+                    val scrolledAdapter = recyclerView.adapter ?: return
+                    val lastVisibleItemPosition = (recyclerView.layoutManager as LinearLayoutManager).findLastVisibleItemPosition()
+                    val itemTotalCount = scrolledAdapter.itemCount - 1
+
+                    if (lastVisibleItemPosition == itemTotalCount) {
+                        currentPage++
+                        searchAndApplyProducts()
+                    }
+                }
+            })
         }
 
         binding.btnSearch.setOnClickListener {
             productSearchAdapter.clearProducts()
-
-            CoroutineScope(Dispatchers.Main).launch {
-                val products: List<ProductUiModel> =
-                    searchProducts(binding.editProductSearch.text.toString())
-                productSearchAdapter.addProducts(products)
-                binding.tvSearchResultCount.text =
-                    "검색결과 ".plus("${productSearchAdapter.itemCount}").plus("건")
-            }
+            searchAndApplyProducts()
         }
 
         binding.btnOnePlusOne.setOnClickListener {
             resetSaleTypeButtonBackground()
+            currentPage = 1
             if (saleType != "1+1") {
                 saleType = "1+1"
                 changeSaleTypeButtonBackground(it)
@@ -60,6 +70,7 @@ class ProductSearchActivity : AppCompatActivity() {
         }
         binding.btnTwoPlusOne.setOnClickListener {
             resetSaleTypeButtonBackground()
+            currentPage = 1
             if (saleType != "2+1") {
                 saleType = "2+1"
                 changeSaleTypeButtonBackground(it)
@@ -69,6 +80,7 @@ class ProductSearchActivity : AppCompatActivity() {
         }
         binding.btnThreePlusOne.setOnClickListener {
             resetSaleTypeButtonBackground()
+            currentPage = 1
             if (saleType != "3+1") {
                 saleType = "3+1"
                 changeSaleTypeButtonBackground(it)
@@ -78,12 +90,23 @@ class ProductSearchActivity : AppCompatActivity() {
         }
         binding.btnFourPlusOne.setOnClickListener {
             resetSaleTypeButtonBackground()
+            currentPage = 1
             if (saleType != "4+1") {
                 saleType = "4+1"
                 changeSaleTypeButtonBackground(it)
             } else {
                 saleType = null
             }
+        }
+    }
+
+    private fun searchAndApplyProducts() {
+        CoroutineScope(Dispatchers.Main).launch {
+            val products: List<ProductUiModel> =
+                searchProducts(binding.editProductSearch.text.toString())
+            productSearchAdapter.addProducts(products)
+            binding.tvSearchResultCount.text =
+                "검색결과 ".plus("${productSearchAdapter.itemCount}").plus("건")
         }
     }
 
@@ -115,7 +138,8 @@ class ProductSearchActivity : AppCompatActivity() {
         withContext(Dispatchers.Default) {
             NetworkModule.convenienceStoreApi.getProducts(
                 title = productName,
-                saleType = saleType
+                saleType = saleType,
+                page = currentPage,
             ).data.map {
                 it.toProductUiModel()
             }
