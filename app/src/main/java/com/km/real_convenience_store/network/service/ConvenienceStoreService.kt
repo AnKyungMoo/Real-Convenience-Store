@@ -1,6 +1,7 @@
 package com.km.real_convenience_store.network.service
 
 import com.km.real_convenience_store.dto.remote.ProductsResponseBody
+import com.km.real_convenience_store.dto.remote.SimilarProductsResponseBody
 import retrofit2.http.GET
 import retrofit2.http.Query
 
