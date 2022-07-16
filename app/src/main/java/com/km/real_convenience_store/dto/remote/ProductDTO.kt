@@ -24,3 +24,4 @@ data class ProductDTO(
     @SerializedName("image") val image: String?,
     @SerializedName("created_at") val createdAt: String?,
 )
+
