@@ -37,6 +37,7 @@ class ProductSearchAdapter: RecyclerView.Adapter<ProductSearchViewHolder>() {
 
     fun clearProducts() {
         _products.clear()
+        notifyDataSetChanged()
     }
 }
 
