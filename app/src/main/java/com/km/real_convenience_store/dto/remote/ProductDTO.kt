@@ -12,6 +12,7 @@ data class PageDataDTO(
     @SerializedName("next") val next: String?,
     @SerializedName("size") val size: Int?,
     @SerializedName("previous") val previous: String?,
+    @SerializedName("max_page") val maxPage: Int?,
 )
 
 data class ProductDTO(

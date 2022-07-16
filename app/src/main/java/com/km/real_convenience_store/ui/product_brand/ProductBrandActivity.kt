@@ -1,4 +1,4 @@
-package com.km.real_convenience_store.ui.product_search
+package com.km.real_convenience_store.ui.product_brand
 
 import android.graphics.Color
 import android.os.Bundle
@@ -8,36 +8,45 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.km.real_convenience_store.R
-import com.km.real_convenience_store.databinding.ActivityProductSearchBinding
-import com.km.real_convenience_store.dto.remote.ProductDTO
+import com.km.real_convenience_store.databinding.ActivityProductBrandBinding
 import com.km.real_convenience_store.model.ProductUiModel
 import com.km.real_convenience_store.network.NetworkModule
 import com.km.real_convenience_store.ui.product_search.adapter.ProductSearchAdapter
+import com.km.real_convenience_store.ui.product_search.toProductUiModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class ProductSearchActivity : AppCompatActivity() {
-    private lateinit var binding: ActivityProductSearchBinding
+class ProductBrandActivity: AppCompatActivity() {
+    private lateinit var binding: ActivityProductBrandBinding
     private val productSearchAdapter = ProductSearchAdapter()
 
     private var saleType: String? = null
     private var currentPage: Int = 1
     private var needLoadMore: Boolean = true
 
+    private var convenienceStoreName: String = ""
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        binding = ActivityProductSearchBinding.inflate(layoutInflater)
+        binding = ActivityProductBrandBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        setConvenienceStoreName()
         initViews()
     }
 
+    private fun setConvenienceStoreName() {
+        convenienceStoreName = intent.extras?.getString("", "") ?: ""
+    }
+
     private fun initViews() {
+        binding.tvBrandTitle.text = convenienceStoreName
+
         binding.rvProducts.apply {
             adapter = productSearchAdapter
-            layoutManager = LinearLayoutManager(this@ProductSearchActivity)
+            layoutManager = LinearLayoutManager(this@ProductBrandActivity)
 
             addOnScrollListener(object : RecyclerView.OnScrollListener() {
                 override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
@@ -116,18 +125,6 @@ class ProductSearchActivity : AppCompatActivity() {
         }
     }
 
-    private fun searchAndApplyProducts() {
-        if (!needLoadMore) return
-
-        CoroutineScope(Dispatchers.Main).launch {
-            val products: List<ProductUiModel> =
-                searchProducts(binding.editProductSearch.text.toString())
-            productSearchAdapter.addProducts(products)
-            binding.tvSearchResultCount.text =
-                "검색결과 ".plus("${productSearchAdapter.itemCount}").plus("건")
-        }
-    }
-
     private fun resetSaleTypeButtonBackground() {
         binding.btnOnePlusOne.apply {
             setBackgroundResource(R.drawable.bg_black_stroke)
@@ -152,12 +149,23 @@ class ProductSearchActivity : AppCompatActivity() {
         (itemView as TextView).setTextColor(Color.WHITE)
     }
 
+    private fun searchAndApplyProducts() {
+        if (!needLoadMore) return
+
+        CoroutineScope(Dispatchers.Main).launch {
+            val products: List<ProductUiModel> =
+                searchProducts(binding.editProductSearch.text.toString())
+            productSearchAdapter.addProducts(products)
+        }
+    }
+
     private suspend fun searchProducts(productName: String): List<ProductUiModel> {
         return withContext(Dispatchers.Default) {
             val productDto = NetworkModule.convenienceStoreApi.getProducts(
                 title = productName,
                 saleType = saleType,
                 page = currentPage,
+                store = convenienceStoreName,
             )
 
             if (currentPage == productDto.pageData.maxPage) {
@@ -170,12 +178,3 @@ class ProductSearchActivity : AppCompatActivity() {
         }
     }
 }
-
-fun ProductDTO.toProductUiModel() =
-    ProductUiModel(
-        storeName = this.store ?: "",
-        productImageUrl = this.image ?: "",
-        productName = this.title ?: "",
-        price = this.price.toString(),
-        saleType = this.saleType ?: ""
-    )
