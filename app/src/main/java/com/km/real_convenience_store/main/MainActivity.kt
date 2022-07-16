@@ -1,7 +1,8 @@
-package com.km.real_convenience_store
+package com.km.real_convenience_store.main
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import com.km.real_convenience_store.R
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
