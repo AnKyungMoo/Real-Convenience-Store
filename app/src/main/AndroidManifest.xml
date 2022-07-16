@@ -18,7 +18,7 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
-            android:name=".ui.product_search.ProductSearchActivity"
+            android:name=".ui.product_brand.ProductBrandActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -26,6 +26,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".main.MainActivity" />
+        <activity android:name=".ui.product_search.ProductSearchActivity" />
         <activity android:name=".main.DetailActivity"/>
     </application>
 
