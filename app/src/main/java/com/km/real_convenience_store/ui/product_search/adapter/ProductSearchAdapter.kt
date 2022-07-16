@@ -26,7 +26,7 @@ class ProductSearchAdapter: RecyclerView.Adapter<ProductSearchViewHolder>() {
 
     override fun getItemCount(): Int = _products.size
 
-    fun setProducts(products: List<ProductUiModel>) {
+    fun addProducts(products: List<ProductUiModel>) {
         _products.addAll(products)
         notifyDataSetChanged()
     }
