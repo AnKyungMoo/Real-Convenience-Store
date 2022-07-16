@@ -9,8 +9,8 @@ import com.km.real_convenience_store.R
 import com.km.real_convenience_store.databinding.ItemFavoriteProductBinding
 import com.km.real_convenience_store.dto.local.FavoriteProductEntity
 
-class FavoriteProductListAdapter :
-    RecyclerView.Adapter<FavoriteProductListAdapter.FavoriteProductListViewHolder>() {
+class FavoriteProductAdapter() :
+    RecyclerView.Adapter<FavoriteProductAdapter.FavoriteProductListViewHolder>() {
 
     private val favoriteProducts = mutableListOf<FavoriteProductEntity>()
 
@@ -34,6 +34,7 @@ class FavoriteProductListAdapter :
 
     fun addFavoriteProducts(favoriteProducts: List<FavoriteProductEntity>) {
         this.favoriteProducts.addAll(favoriteProducts)
+        notifyDataSetChanged()
     }
 
     class FavoriteProductListViewHolder(private val binding: ItemFavoriteProductBinding) :
