@@ -44,7 +44,12 @@ class MainActivity : AppCompatActivity() {
         initFavoriteProductRecyclerView()
         initTotalProductRecyclerView()
         getAndApplyTotalProduct()
+    }
 
+    override fun onResume() {
+        super.onResume()
+
+        getFavoriteProducts()
     }
 
     private fun selectEvent() {
@@ -142,12 +147,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initFavoriteProductRecyclerView() {
-        CoroutineScope(Dispatchers.IO).launch {
-            val favoriteProducts =
-                AppDatabase.getInstance(this@MainActivity).userInfoDAO().getFavoriteProduct()
-            favoriteProductListAdapter.addFavoriteProducts(favoriteProducts)
-        }
-
         binding.rvFavoriteProduct.apply {
             adapter = favoriteProductListAdapter
             layoutManager = LinearLayoutManager(
@@ -159,6 +158,17 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun getFavoriteProducts() {
+        favoriteProductListAdapter.clearFavoriteProducts()
+
+        CoroutineScope(Dispatchers.IO).launch {
+            val favoriteProducts =
+                AppDatabase.getInstance(this@MainActivity).userInfoDAO().getFavoriteProduct()
+            withContext(Dispatchers.Main) {
+                favoriteProductListAdapter.addFavoriteProducts(favoriteProducts)
+            }
+        }
+    }
 
 
     private fun initTotalProductRecyclerView() {

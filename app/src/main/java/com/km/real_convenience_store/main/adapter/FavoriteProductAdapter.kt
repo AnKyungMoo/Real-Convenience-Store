@@ -46,6 +46,11 @@ class FavoriteProductAdapter(private val context: Context) :
         notifyDataSetChanged()
     }
 
+    fun clearFavoriteProducts() {
+        this.favoriteProducts.clear()
+        notifyDataSetChanged()
+    }
+
     class FavoriteProductListViewHolder(private val binding: ItemFavoriteProductBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun onBind(item: FavoriteProductEntity) {

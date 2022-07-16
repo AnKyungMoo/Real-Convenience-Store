@@ -1,11 +1,16 @@
 package com.km.real_convenience_store.main
 
 import android.os.Bundle
+import android.util.Log
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.km.real_convenience_store.R
+import com.km.real_convenience_store.database.AppDatabase
 import com.km.real_convenience_store.databinding.ActivityDetailBinding
+import com.km.real_convenience_store.dto.local.FavoriteProductEntity
 import com.km.real_convenience_store.dto.remote.ProductDTO
 import com.km.real_convenience_store.model.ProductUiModel
 import com.km.real_convenience_store.network.NetworkModule
@@ -22,6 +27,8 @@ class DetailActivity : AppCompatActivity() {
     private val productSearchAdapter = ProductSearchAdapter()
 
     private var productName: String? = null
+    private var storeName: String? = null
+    private var imageUrl: String? = null
     var currentPage: Int = 1
     var needLoadMore: Boolean = true
 
@@ -34,8 +41,10 @@ class DetailActivity : AppCompatActivity() {
         if (item != null) {
 
             Glide.with(binding.ivProductImage.context).load(item.productImageUrl)
-                .into(binding.ivProductImage);
+                .into(binding.ivProductImage)
+            imageUrl = item.productImageUrl
             binding.tvConvenienceBrand.text = item.storeName
+            storeName = item.storeName
             binding.tvProductName.text = item.productName
             productName = item.productName
             binding.tvProductPrice.text = item.price + "원"
@@ -44,6 +53,26 @@ class DetailActivity : AppCompatActivity() {
         initRecyclerView()
         searchAndApplyProducts()
 
+        CoroutineScope(Dispatchers.Main).launch {
+            val isFavoriteProduct = isFavoriteProduct()
+
+            if (isFavoriteProduct) binding.btnFavorite.setImageResource(R.drawable.icon_black_star)
+            else binding.btnFavorite.setImageResource(R.drawable.icon_white_star)
+        }
+        initEvent()
+
+    }
+
+    private suspend fun isFavoriteProduct(): Boolean {
+        return withContext(Dispatchers.IO) {
+            val productName = this@DetailActivity.productName ?: return@withContext false
+            val storeName = this@DetailActivity.storeName ?: return@withContext  false
+
+            AppDatabase
+                .getInstance(this@DetailActivity)
+                .userInfoDAO()
+                .isExistFavoriteProduct(productName, storeName) > 0
+        }
     }
 
     private fun initRecyclerView() {
@@ -92,6 +121,46 @@ class DetailActivity : AppCompatActivity() {
             productDto.data.map {
                 it.toProductUiModel()
             }
+        }
+    }
+
+    private fun initEvent() {
+        binding.btnFavorite.setOnClickListener {
+            CoroutineScope(Dispatchers.Main).launch {
+                if (isFavoriteProduct()) {
+                    deleteFavoriteProduct()
+                    binding.btnFavorite.setImageResource(R.drawable.icon_white_star)
+                    Toast.makeText(this@DetailActivity, "즐겨찾기를 해제했습니다", Toast.LENGTH_SHORT).show()
+                } else {
+                    insertFavoriteProduct()
+                    binding.btnFavorite.setImageResource(R.drawable.icon_black_star)
+                    Toast.makeText(this@DetailActivity, "즐겨찾기에 추가했습니다", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
+
+    private suspend fun deleteFavoriteProduct() {
+        withContext(Dispatchers.IO) {
+            AppDatabase.getInstance(this@DetailActivity).userInfoDAO().deleteFavoriteProduct(
+                FavoriteProductEntity(
+                    title = productName ?: "",
+                    store = storeName ?: "",
+                    imageUrl = imageUrl
+                )
+            )
+        }
+    }
+
+    private suspend fun insertFavoriteProduct() {
+        withContext(Dispatchers.IO) {
+            AppDatabase.getInstance(this@DetailActivity).userInfoDAO().addFavoriteProduct(
+                FavoriteProductEntity(
+                    title = productName ?: "",
+                    store = storeName ?: "",
+                    imageUrl = imageUrl
+                )
+            )
         }
     }
 }
