@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.km.real_convenience_store.R
 import com.km.real_convenience_store.databinding.ItemFavoriteProductBinding
 import com.km.real_convenience_store.dto.local.FavoriteProductEntity
@@ -49,6 +50,7 @@ class FavoriteProductAdapter(private val context: Context) :
         RecyclerView.ViewHolder(binding.root) {
         fun onBind(item: FavoriteProductEntity) {
             binding.tvProductName.text = item.title
+            Glide.with(binding.ivProductImage.context).load(item.imageUrl).into(binding.ivProductImage)
         }
     }
 }
