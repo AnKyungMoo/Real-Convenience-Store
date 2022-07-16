@@ -11,6 +11,7 @@ import com.km.real_convenience_store.databinding.ActivityMainBinding
 import com.km.real_convenience_store.main.adapter.FavoriteProductAdapter
 import com.km.real_convenience_store.main.adapter.FavoriteProductListDecorator
 import com.km.real_convenience_store.model.ProductUiModel
+import com.km.real_convenience_store.ui.product_brand.ProductBrandActivity
 import com.km.real_convenience_store.ui.product_search.ProductSearchActivity
 import com.km.real_convenience_store.ui.product_search.adapter.ProductSearchAdapter
 import kotlinx.coroutines.CoroutineScope
@@ -29,7 +30,38 @@ class MainActivity : AppCompatActivity() {
 
         moveToProductSearch()
         connectFavoriteProductAdapter()
+        moveTdProductBrand()
 
+    }
+
+    fun moveTdProductBrand() {
+        binding.tvCu.setOnClickListener {
+            val intent = Intent(this, ProductBrandActivity::class.java).apply {
+                putExtra(ProductBrandActivity.CONVENIENCE_STORE_NAME, "CU")
+            }
+            startActivity(intent)
+        }
+
+        binding.tvGs25.setOnClickListener {
+            val intent = Intent(this, ProductBrandActivity::class.java).apply {
+                putExtra(ProductBrandActivity.CONVENIENCE_STORE_NAME, "GS25")
+            }
+            startActivity(intent)
+        }
+
+        binding.tvSevenEleven.setOnClickListener {
+            val intent = Intent(this, ProductBrandActivity::class.java).apply {
+                putExtra(ProductBrandActivity.CONVENIENCE_STORE_NAME, "Seven_eleven")
+            }
+            startActivity(intent)
+        }
+
+        binding.tvEmart24.setOnClickListener {
+            val intent = Intent(this, ProductBrandActivity::class.java).apply {
+                putExtra(ProductBrandActivity.CONVENIENCE_STORE_NAME, "emart24")
+            }
+            startActivity(intent)
+        }
     }
 
     private fun connectFavoriteProductAdapter() {
