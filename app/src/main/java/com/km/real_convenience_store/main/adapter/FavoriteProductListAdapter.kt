@@ -9,8 +9,10 @@ import com.km.real_convenience_store.R
 import com.km.real_convenience_store.databinding.ItemFavoriteProductBinding
 import com.km.real_convenience_store.dto.local.FavoriteProductEntity
 
-class FavoriteProductListAdapter(private val mList: List<FavoriteProductEntity>) :
+class FavoriteProductListAdapter :
     RecyclerView.Adapter<FavoriteProductListAdapter.FavoriteProductListViewHolder>() {
+
+    private val favoriteProducts = mutableListOf<FavoriteProductEntity>()
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -25,10 +27,14 @@ class FavoriteProductListAdapter(private val mList: List<FavoriteProductEntity>)
     )
 
     override fun onBindViewHolder(holder: FavoriteProductListViewHolder, position: Int) {
-        holder.onBind(mList[position])
+        holder.onBind(favoriteProducts[position])
     }
 
-    override fun getItemCount(): Int = mList.size
+    override fun getItemCount(): Int = favoriteProducts.size
+
+    fun addFavoriteProducts(favoriteProducts: List<FavoriteProductEntity>) {
+        this.favoriteProducts.addAll(favoriteProducts)
+    }
 
     class FavoriteProductListViewHolder(private val binding: ItemFavoriteProductBinding) :
         RecyclerView.ViewHolder(binding.root) {
