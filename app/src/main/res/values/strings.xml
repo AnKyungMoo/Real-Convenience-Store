@@ -6,4 +6,6 @@
     <string name="ministop">미니스톱</string>
     <string name="favorite_product">자주 찾는 상품</string>
     <string name="new_product">신규 상품</string>
+    <string name="event_period">행사기간</string>
+    <string name="compare_product">같은상품 비교햐기</string>
 </resources>
