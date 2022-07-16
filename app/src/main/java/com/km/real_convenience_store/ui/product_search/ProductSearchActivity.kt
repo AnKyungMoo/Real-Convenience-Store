@@ -2,6 +2,7 @@ package com.km.real_convenience_store.ui.product_search
 
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -32,6 +33,19 @@ class ProductSearchActivity : AppCompatActivity() {
         binding = ActivityProductSearchBinding.inflate(layoutInflater)
         setContentView(binding.root)
         initViews()
+
+        getFavoriteProduct()
+    }
+
+    private fun getFavoriteProduct() {
+        val productName = intent.getStringExtra(PRODUCT_NAME)
+
+        if(!productName.isNullOrEmpty()){
+            binding.editProductSearch.setText(productName)
+            needLoadMore = true
+            currentPage = 1
+            searchAndApplyProducts()
+        }
     }
 
     private fun initViews() {
@@ -168,6 +182,10 @@ class ProductSearchActivity : AppCompatActivity() {
                 it.toProductUiModel()
             }
         }
+    }
+
+    companion object {
+        const val PRODUCT_NAME = "PRODUCT_NAME"
     }
 }
 

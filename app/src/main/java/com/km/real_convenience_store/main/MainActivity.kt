@@ -28,7 +28,7 @@ import kotlinx.coroutines.withContext
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
-    private val favoriteProductListAdapter = FavoriteProductAdapter()
+    private val favoriteProductListAdapter = FavoriteProductAdapter(this)
     private val productSearchAdapter = ProductSearchAdapter()
     private var needLoadMore: Boolean = true
     private var currentPage: Int = 1

@@ -1,6 +1,7 @@
 package com.km.real_convenience_store.main.adapter
 
 import android.content.Context
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
@@ -8,8 +9,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.km.real_convenience_store.R
 import com.km.real_convenience_store.databinding.ItemFavoriteProductBinding
 import com.km.real_convenience_store.dto.local.FavoriteProductEntity
+import com.km.real_convenience_store.ui.product_search.ProductSearchActivity
 
-class FavoriteProductAdapter() :
+class FavoriteProductAdapter(private val context: Context) :
     RecyclerView.Adapter<FavoriteProductAdapter.FavoriteProductListViewHolder>() {
 
     private val favoriteProducts = mutableListOf<FavoriteProductEntity>()
@@ -28,6 +30,12 @@ class FavoriteProductAdapter() :
 
     override fun onBindViewHolder(holder: FavoriteProductListViewHolder, position: Int) {
         holder.onBind(favoriteProducts[position])
+        holder.itemView.setOnClickListener {
+            val intent = Intent(context, ProductSearchActivity::class.java).apply {
+                putExtra(ProductSearchActivity.PRODUCT_NAME, favoriteProducts[position].title)
+            }
+            context.startActivity(intent)
+        }
     }
 
     override fun getItemCount(): Int = favoriteProducts.size
