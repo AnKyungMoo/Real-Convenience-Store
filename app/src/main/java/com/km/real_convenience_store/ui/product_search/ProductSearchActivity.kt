@@ -57,8 +57,9 @@ class ProductSearchActivity : AppCompatActivity() {
 
         binding.btnSearch.setOnClickListener {
             productSearchAdapter.clearProducts()
-            searchAndApplyProducts()
             needLoadMore = true
+            currentPage = 1
+            searchAndApplyProducts()
         }
 
         binding.btnOnePlusOne.setOnClickListener {
