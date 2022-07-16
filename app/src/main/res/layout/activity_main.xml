@@ -203,6 +203,7 @@
             app:layout_constraintTop_toTopOf="@id/tv_one_plus_one" />
 
         <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_new_product"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="20dp"
