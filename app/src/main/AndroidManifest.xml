@@ -17,10 +17,6 @@
         android:theme="@style/Theme.RealConvenienceStore"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
-        <activity
-            android:name=".ui.product_brand.ProductBrandActivity"
-            android:exported="true">
-        </activity>
 
         <activity android:name=".main.MainActivity"
             android:exported="true">
@@ -30,8 +26,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".main.MainActivity" />
+
         <activity android:name=".ui.product_search.ProductSearchActivity" />
         <activity android:name=".main.DetailActivity"/>
+        <activity android:name=".ui.product_brand.ProductBrandActivity"/>
     </application>
 </manifest>
