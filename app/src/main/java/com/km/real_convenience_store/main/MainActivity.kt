@@ -169,11 +169,9 @@ class MainActivity : AppCompatActivity() {
                     favoriteProductListAdapter.addFavoriteProducts(favoriteProducts)
                     binding.rvFavoriteProduct.visibility = View.VISIBLE
                     binding.tvEmptyMessage.visibility = View.INVISIBLE
-                    binding.spacer.visibility = View.INVISIBLE
                 }else{
                     binding.rvFavoriteProduct.visibility = View.INVISIBLE
                     binding.tvEmptyMessage.visibility = View.VISIBLE
-                    binding.spacer.visibility = View.VISIBLE
                 }
             }
         }
