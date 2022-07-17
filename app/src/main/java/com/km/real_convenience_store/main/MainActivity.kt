@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.transition.Visibility
 import com.km.real_convenience_store.R
 import com.km.real_convenience_store.database.AppDatabase
 import com.km.real_convenience_store.databinding.ActivityMainBinding
@@ -48,7 +49,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-
         getFavoriteProducts()
     }
 
@@ -165,7 +165,16 @@ class MainActivity : AppCompatActivity() {
             val favoriteProducts =
                 AppDatabase.getInstance(this@MainActivity).userInfoDAO().getFavoriteProduct()
             withContext(Dispatchers.Main) {
-                favoriteProductListAdapter.addFavoriteProducts(favoriteProducts)
+                if(favoriteProducts.isNotEmpty()){
+                    favoriteProductListAdapter.addFavoriteProducts(favoriteProducts)
+                    binding.rvFavoriteProduct.visibility = View.VISIBLE
+                    binding.tvEmptyMessage.visibility = View.INVISIBLE
+                    binding.spacer.visibility = View.INVISIBLE
+                }else{
+                    binding.rvFavoriteProduct.visibility = View.INVISIBLE
+                    binding.tvEmptyMessage.visibility = View.VISIBLE
+                    binding.spacer.visibility = View.VISIBLE
+                }
             }
         }
     }
