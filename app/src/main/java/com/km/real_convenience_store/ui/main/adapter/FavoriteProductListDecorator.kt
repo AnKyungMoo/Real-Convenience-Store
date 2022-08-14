@@ -1,4 +1,4 @@
-package com.km.real_convenience_store.main.adapter
+package com.km.real_convenience_store.ui.main.adapter
 
 import android.graphics.Rect
 import android.view.View

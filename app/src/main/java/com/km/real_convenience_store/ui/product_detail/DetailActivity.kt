@@ -1,7 +1,6 @@
-package com.km.real_convenience_store.main
+package com.km.real_convenience_store.ui.product_detail
 
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -11,7 +10,6 @@ import com.km.real_convenience_store.R
 import com.km.real_convenience_store.database.AppDatabase
 import com.km.real_convenience_store.databinding.ActivityDetailBinding
 import com.km.real_convenience_store.dto.local.FavoriteProductEntity
-import com.km.real_convenience_store.dto.remote.ProductDTO
 import com.km.real_convenience_store.model.ProductUiModel
 import com.km.real_convenience_store.network.NetworkModule
 import com.km.real_convenience_store.ui.product_search.adapter.ProductSearchAdapter

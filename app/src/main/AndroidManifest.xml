@@ -18,7 +18,7 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
 
-        <activity android:name=".main.MainActivity"
+        <activity android:name="com.km.real_convenience_store.ui.main.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -28,7 +28,7 @@
         </activity>
 
         <activity android:name=".ui.product_search.ProductSearchActivity" />
-        <activity android:name=".main.DetailActivity"/>
+        <activity android:name="com.km.real_convenience_store.ui.product_detail.DetailActivity"/>
         <activity android:name=".ui.product_brand.ProductBrandActivity"/>
     </application>
 </manifest>

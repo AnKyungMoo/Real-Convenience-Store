@@ -1,4 +1,4 @@
-package com.km.real_convenience_store.main
+package com.km.real_convenience_store.ui.main
 
 import android.content.Intent
 import android.graphics.Color
@@ -9,12 +9,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.transition.Visibility
 import com.km.real_convenience_store.R
 import com.km.real_convenience_store.database.AppDatabase
 import com.km.real_convenience_store.databinding.ActivityMainBinding
-import com.km.real_convenience_store.main.adapter.FavoriteProductAdapter
-import com.km.real_convenience_store.main.adapter.FavoriteProductListDecorator
+import com.km.real_convenience_store.ui.main.adapter.FavoriteProductAdapter
+import com.km.real_convenience_store.ui.main.adapter.FavoriteProductListDecorator
 import com.km.real_convenience_store.model.ProductUiModel
 import com.km.real_convenience_store.network.NetworkModule
 import com.km.real_convenience_store.ui.product_brand.ProductBrandActivity

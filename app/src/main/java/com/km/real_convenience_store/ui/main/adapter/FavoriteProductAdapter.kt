@@ -1,4 +1,4 @@
-package com.km.real_convenience_store.main.adapter
+package com.km.real_convenience_store.ui.main.adapter
 
 import android.content.Context
 import android.content.Intent
