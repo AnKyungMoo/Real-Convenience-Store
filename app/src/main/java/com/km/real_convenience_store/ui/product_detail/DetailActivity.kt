@@ -26,9 +26,6 @@ class DetailActivity : AppCompatActivity() {
     private var price: String? = null
     private var saleType: String? = null
 
-    var currentPage: Int = 1
-    var needLoadMore: Boolean = true
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityDetailBinding.inflate(layoutInflater)
@@ -103,7 +100,7 @@ class DetailActivity : AppCompatActivity() {
                     val itemTotalCount = scrolledAdapter.itemCount - 1
 
                     if (lastVisibleItemPosition == itemTotalCount) {
-                        currentPage++
+                        viewModel.currentPage++
                         getSimilarProducts()
                     }
                 }
@@ -111,11 +108,10 @@ class DetailActivity : AppCompatActivity() {
         }
     }
 
-    /* TODO: currentPage를 파라미터로 넘겨야할까? */
     private fun getSimilarProducts() {
-        if (!needLoadMore) return
+        if (!viewModel.needLoadMore) return
 
-        viewModel.getSimilarProducts(currentPage, productName)
+        viewModel.getSimilarProducts(productName)
     }
 
     private fun switchFavoriteProductState(isRemoveFavoriteProduct: Boolean) {
