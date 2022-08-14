@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.km.real_convenience_store.common.StringValues
 import com.km.real_convenience_store.databinding.ItemConvenienceProductBinding
 import com.km.real_convenience_store.ui.product_detail.DetailActivity
 import com.km.real_convenience_store.model.ProductUiModel
@@ -53,7 +54,7 @@ class ProductSearchViewHolder(
 
         itemView.setOnClickListener {
             val intent = Intent(itemView.context, DetailActivity::class.java)
-            intent.putExtra("item", item)
+            intent.putExtra(StringValues.INTENT_ITEM, item)
             itemView.context.startActivity(intent)
         }
     }
