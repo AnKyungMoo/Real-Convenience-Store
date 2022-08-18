@@ -4,10 +4,12 @@ import android.graphics.Color
 import android.os.Bundle
 import android.view.View
 import android.widget.TextView
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.km.real_convenience_store.R
+import com.km.real_convenience_store.common.ViewModelFactory
 import com.km.real_convenience_store.databinding.ActivityProductBrandBinding
 import com.km.real_convenience_store.model.ProductUiModel
 import com.km.real_convenience_store.network.NetworkModule
@@ -18,31 +20,55 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class ProductBrandActivity: AppCompatActivity() {
+class ProductBrandActivity : AppCompatActivity() {
     private lateinit var binding: ActivityProductBrandBinding
+    private val viewModel: ProductBrandViewModel by viewModels { ViewModelFactory(this) }
+
     private val productSearchAdapter = ProductSearchAdapter()
 
     private var saleType: String? = null
     private var currentPage: Int = 1
     private var needLoadMore: Boolean = true
 
-    private var convenienceStoreName: String = ""
+    private var convenienceStoreName = intent.getStringExtra(CONVENIENCE_STORE_NAME)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         binding = ActivityProductBrandBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        setConvenienceStoreName()
+
+        bindViews()
         initViews()
     }
 
-    private fun setConvenienceStoreName() {
-        convenienceStoreName = intent.extras?.getString(CONVENIENCE_STORE_NAME, "") ?: ""
+    private fun bindViews() {
+        binding.tvBrandTitle.text = convenienceStoreName
+
+        binding.btnSearch.setOnClickListener {
+            productSearchAdapter.clearProducts()
+            needLoadMore = true
+            currentPage = 1
+            searchAndApplyProducts()
+        }
+
+        binding.btnOnePlusOne.setOnClickListener {
+            saleTypeButtonClickEvents("1+1", it)
+        }
+        binding.btnTwoPlusOne.setOnClickListener {
+            saleTypeButtonClickEvents("2+1", it)
+
+        }
+        binding.btnThreePlusOne.setOnClickListener {
+            saleTypeButtonClickEvents("3+1", it)
+
+        }
+        binding.btnFourPlusOne.setOnClickListener {
+            saleTypeButtonClickEvents("4+1", it)
+        }
     }
 
     private fun initViews() {
-        binding.tvBrandTitle.text = convenienceStoreName
 
         binding.rvProducts.apply {
             adapter = productSearchAdapter
@@ -63,66 +89,15 @@ class ProductBrandActivity: AppCompatActivity() {
                 }
             })
         }
+    }
 
-        binding.btnSearch.setOnClickListener {
-            productSearchAdapter.clearProducts()
-            needLoadMore = true
-            currentPage = 1
-            searchAndApplyProducts()
-        }
-
-        binding.btnOnePlusOne.setOnClickListener {
-            resetSaleTypeButtonBackground()
-            productSearchAdapter.clearProducts()
-            needLoadMore = true
-            currentPage = 1
-            if (saleType != "1+1") {
-                saleType = "1+1"
-                changeSaleTypeButtonBackground(it)
-            } else {
-                saleType = null
-            }
-            searchAndApplyProducts()
-        }
-        binding.btnTwoPlusOne.setOnClickListener {
-            resetSaleTypeButtonBackground()
-            productSearchAdapter.clearProducts()
-            needLoadMore = true
-            currentPage = 1
-            if (saleType != "2+1") {
-                saleType = "2+1"
-                changeSaleTypeButtonBackground(it)
-            } else {
-                saleType = null
-            }
-            searchAndApplyProducts()
-        }
-        binding.btnThreePlusOne.setOnClickListener {
-            resetSaleTypeButtonBackground()
-            productSearchAdapter.clearProducts()
-            needLoadMore = true
-            currentPage = 1
-            if (saleType != "3+1") {
-                saleType = "3+1"
-                changeSaleTypeButtonBackground(it)
-            } else {
-                saleType = null
-            }
-            searchAndApplyProducts()
-        }
-        binding.btnFourPlusOne.setOnClickListener {
-            resetSaleTypeButtonBackground()
-            productSearchAdapter.clearProducts()
-            needLoadMore = true
-            currentPage = 1
-            if (saleType != "4+1") {
-                saleType = "4+1"
-                changeSaleTypeButtonBackground(it)
-            } else {
-                saleType = null
-            }
-            searchAndApplyProducts()
-        }
+    private fun saleTypeButtonClickEvents(saleTypeValue: String, view: View) {
+        resetSaleTypeButtonBackground()
+        productSearchAdapter.clearProducts()
+        needLoadMore = true
+        currentPage = 1
+        checkSaleType(saleTypeValue, view)
+        searchAndApplyProducts()
     }
 
     private fun resetSaleTypeButtonBackground() {
@@ -141,6 +116,15 @@ class ProductBrandActivity: AppCompatActivity() {
         binding.btnFourPlusOne.apply {
             setBackgroundResource(R.drawable.bg_black_stroke)
             setTextColor(Color.BLACK)
+        }
+    }
+
+    private fun checkSaleType(saleTypeValue: String, view: View) {
+        if (saleType != saleTypeValue) {
+            saleType = saleTypeValue
+            changeSaleTypeButtonBackground(view)
+        } else {
+            saleType = null
         }
     }
 
