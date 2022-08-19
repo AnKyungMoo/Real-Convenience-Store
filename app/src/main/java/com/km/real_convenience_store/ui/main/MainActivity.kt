@@ -5,144 +5,136 @@ import android.graphics.Color
 import android.os.Bundle
 import android.view.View
 import android.widget.TextView
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.km.real_convenience_store.R
-import com.km.real_convenience_store.database.AppDatabase
+import com.km.real_convenience_store.common.ViewModelFactory
 import com.km.real_convenience_store.databinding.ActivityMainBinding
 import com.km.real_convenience_store.ui.main.adapter.FavoriteProductAdapter
 import com.km.real_convenience_store.ui.main.adapter.FavoriteProductListDecorator
-import com.km.real_convenience_store.model.ProductUiModel
-import com.km.real_convenience_store.network.NetworkModule
 import com.km.real_convenience_store.ui.product_brand.ProductBrandActivity
 import com.km.real_convenience_store.ui.product_search.ProductSearchActivity
 import com.km.real_convenience_store.ui.product_search.adapter.ProductSearchAdapter
-import com.km.real_convenience_store.ui.product_search.toProductUiModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
+    private val viewModel: MainViewModel by viewModels { ViewModelFactory(this) }
     private val favoriteProductListAdapter = FavoriteProductAdapter(this)
     private val productSearchAdapter = ProductSearchAdapter()
-    private var needLoadMore: Boolean = true
-    private var currentPage: Int = 1
-    private var saleType: String? = null
+
+    private var currentPage: Int = DEFAULT_PAGE
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
 
-        selectEvent()
-        moveToProductSearch()
-        moveToProductBrand()
+        bindViews()
+        observeData()
         initFavoriteProductRecyclerView()
         initTotalProductRecyclerView()
-        getAndApplyTotalProduct()
+
+        viewModel.getTotalProducts(DEFAULT_PAGE)
     }
 
-    override fun onResume() {
-        super.onResume()
-        getFavoriteProducts()
-    }
-
-    private fun selectEvent() {
+    private fun bindViews() {
         binding.tvOnePlusOne.setOnClickListener {
-            resetSaleTypeButtonBackground()
             productSearchAdapter.clearProducts()
-            needLoadMore = true
-            currentPage = 1
-            if (saleType != "1+1") {
-                saleType = "1+1"
+            resetSaleTypeButtonBackground()
+
+            if (viewModel.getSaleType() != ONE_PLUS_ONE) {
                 changeSaleTypeButtonBackground(it)
-            } else {
-                saleType = null
             }
-            getAndApplyTotalProduct()
+
+            viewModel.setSaleType(ONE_PLUS_ONE)
+            viewModel.getTotalProducts(DEFAULT_PAGE)
         }
 
         binding.tvTwoPlusOne.setOnClickListener {
-            resetSaleTypeButtonBackground()
             productSearchAdapter.clearProducts()
-            needLoadMore = true
-            currentPage = 1
-            if (saleType != "2+1") {
-                saleType = "2+1"
+            resetSaleTypeButtonBackground()
+
+            if (viewModel.getSaleType() != TWO_PLUS_ONE) {
                 changeSaleTypeButtonBackground(it)
-            } else {
-                saleType = null
             }
-            getAndApplyTotalProduct()
+            viewModel.setSaleType(TWO_PLUS_ONE)
+            viewModel.getTotalProducts(DEFAULT_PAGE)
         }
 
         binding.tvThreePlusOne.setOnClickListener {
-            resetSaleTypeButtonBackground()
             productSearchAdapter.clearProducts()
-            needLoadMore = true
-            currentPage = 1
-            if (saleType != "3+1") {
-                saleType = "3+1"
+            resetSaleTypeButtonBackground()
+
+            if (viewModel.getSaleType() != THREE_PLUS_ONE) {
                 changeSaleTypeButtonBackground(it)
-            } else {
-                saleType = null
             }
-            getAndApplyTotalProduct()
+            viewModel.setSaleType(THREE_PLUS_ONE)
+            viewModel.getTotalProducts(DEFAULT_PAGE)
         }
 
         binding.tvFourPlusOne.setOnClickListener {
-            resetSaleTypeButtonBackground()
             productSearchAdapter.clearProducts()
-            needLoadMore = true
-            currentPage = 1
-            if (saleType != "4+1") {
-                saleType = "4+1"
-                changeSaleTypeButtonBackground(it)
-            } else {
-                saleType = null
-            }
-            getAndApplyTotalProduct()
-        }
-    }
+            resetSaleTypeButtonBackground()
 
-    private fun moveToProductSearch() {
+            if (viewModel.getSaleType() != FOUR_PLUS_ONE) {
+                changeSaleTypeButtonBackground(it)
+            }
+            viewModel.setSaleType(FOUR_PLUS_ONE)
+            viewModel.getTotalProducts(DEFAULT_PAGE)
+        }
+
         binding.tvInputHint.setOnClickListener {
             startActivity(Intent(this, ProductSearchActivity::class.java))
         }
-    }
 
-    private fun moveToProductBrand() {
         binding.tvCu.setOnClickListener {
             val intent = Intent(this, ProductBrandActivity::class.java).apply {
-                putExtra(ProductBrandActivity.CONVENIENCE_STORE_NAME, "CU")
+                putExtra(ProductBrandActivity.CONVENIENCE_STORE_NAME, CU)
             }
             startActivity(intent)
         }
 
         binding.tvGs25.setOnClickListener {
             val intent = Intent(this, ProductBrandActivity::class.java).apply {
-                putExtra(ProductBrandActivity.CONVENIENCE_STORE_NAME, "GS25")
+                putExtra(ProductBrandActivity.CONVENIENCE_STORE_NAME, GS_25)
             }
             startActivity(intent)
         }
 
         binding.tvSevenEleven.setOnClickListener {
             val intent = Intent(this, ProductBrandActivity::class.java).apply {
-                putExtra(ProductBrandActivity.CONVENIENCE_STORE_NAME, "Seven_eleven")
+                putExtra(ProductBrandActivity.CONVENIENCE_STORE_NAME, SEVEN_ELEVEN)
             }
             startActivity(intent)
         }
 
         binding.tvEmart24.setOnClickListener {
             val intent = Intent(this, ProductBrandActivity::class.java).apply {
-                putExtra(ProductBrandActivity.CONVENIENCE_STORE_NAME, "emart24")
+                putExtra(ProductBrandActivity.CONVENIENCE_STORE_NAME, E_MART_24)
             }
             startActivity(intent)
         }
+    }
+
+    private fun observeData() {
+        viewModel.products.observe(this) { products ->
+            productSearchAdapter.addProducts(products)
+        }
+
+        viewModel.favoriteProducts.observe(this) { favoriteProducts ->
+            favoriteProductListAdapter.addFavoriteProducts(favoriteProducts)
+            changeFavoriteProductView(favoriteProducts.isNotEmpty())
+        }
+    }
+
+    private fun changeFavoriteProductView(isNotEmptyFavoriteProducts: Boolean) {
+        binding.rvFavoriteProduct.visibility =
+            if (isNotEmptyFavoriteProducts) View.VISIBLE else View.INVISIBLE
+        binding.tvEmptyMessage.visibility =
+            if (isNotEmptyFavoriteProducts) View.INVISIBLE else View.VISIBLE
     }
 
     private fun initFavoriteProductRecyclerView() {
@@ -156,26 +148,6 @@ class MainActivity : AppCompatActivity() {
             addItemDecoration(FavoriteProductListDecorator())
         }
     }
-
-    private fun getFavoriteProducts() {
-        favoriteProductListAdapter.clearFavoriteProducts()
-
-        CoroutineScope(Dispatchers.IO).launch {
-            val favoriteProducts =
-                AppDatabase.getInstance(this@MainActivity).userInfoDAO().getFavoriteProduct()
-            withContext(Dispatchers.Main) {
-                if(favoriteProducts.isNotEmpty()){
-                    favoriteProductListAdapter.addFavoriteProducts(favoriteProducts)
-                    binding.rvFavoriteProduct.visibility = View.VISIBLE
-                    binding.tvEmptyMessage.visibility = View.INVISIBLE
-                }else{
-                    binding.rvFavoriteProduct.visibility = View.INVISIBLE
-                    binding.tvEmptyMessage.visibility = View.VISIBLE
-                }
-            }
-        }
-    }
-
 
     private fun initTotalProductRecyclerView() {
         binding.rvTotalProduct.apply {
@@ -196,56 +168,60 @@ class MainActivity : AppCompatActivity() {
 
                     if (lastVisibleItemPosition == itemTotalCount) {
                         currentPage++
-                        getAndApplyTotalProduct()
+                        viewModel.getTotalProducts(currentPage)
                     }
                 }
             })
         }
     }
 
-    private fun getAndApplyTotalProduct() {
-        if (!needLoadMore) return
-
-        CoroutineScope(Dispatchers.Main).launch {
-            val products: List<ProductUiModel> = getTotalProduct()
-            productSearchAdapter.addProducts(products)
-        }
-    }
-
-    private suspend fun getTotalProduct(): List<ProductUiModel> {
-        return withContext(Dispatchers.Default) {
-            val productDto = NetworkModule.convenienceStoreApi.getProducts(
-                saleType = saleType,
-                page = currentPage
-            )
-
-            productDto.data.map {
-                it.toProductUiModel()
-            }
-        }
-    }
-
     private fun resetSaleTypeButtonBackground() {
         binding.tvOnePlusOne.apply {
-            setBackgroundResource(R.drawable.bg_black_stroke)
-            setTextColor(Color.BLACK)
+            initSaleTypeBackground(this)
         }
+
         binding.tvTwoPlusOne.apply {
-            setBackgroundResource(R.drawable.bg_black_stroke)
-            setTextColor(Color.BLACK)
+            initSaleTypeBackground(this)
         }
+
         binding.tvThreePlusOne.apply {
-            setBackgroundResource(R.drawable.bg_black_stroke)
-            setTextColor(Color.BLACK)
+            initSaleTypeBackground(this)
         }
+
         binding.tvFourPlusOne.apply {
-            setBackgroundResource(R.drawable.bg_black_stroke)
-            setTextColor(Color.BLACK)
+            initSaleTypeBackground(this)
         }
+    }
+
+    private fun initSaleTypeBackground(itemView: View) {
+        itemView.setBackgroundResource(R.drawable.bg_black_stroke)
+        (itemView as TextView).setTextColor(Color.BLACK)
     }
 
     private fun changeSaleTypeButtonBackground(itemView: View) {
         itemView.setBackgroundResource(R.drawable.bg_sale_type_black_button)
         (itemView as TextView).setTextColor(Color.WHITE)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        getFavoriteProducts()
+    }
+
+    private fun getFavoriteProducts() {
+        favoriteProductListAdapter.clearFavoriteProducts()
+        viewModel.isFavoriteProducts()
+    }
+
+    companion object {
+        const val CU = "CU"
+        const val GS_25 = "GS25"
+        const val SEVEN_ELEVEN = "Seven_eleven"
+        const val E_MART_24 = "emart_24"
+        const val DEFAULT_PAGE = 1
+        const val ONE_PLUS_ONE = "1+1"
+        const val TWO_PLUS_ONE = "2+1"
+        const val THREE_PLUS_ONE = "3+1"
+        const val FOUR_PLUS_ONE = "4+1"
     }
 }
