@@ -26,8 +26,6 @@ class MainActivity : AppCompatActivity() {
     private val favoriteProductListAdapter = FavoriteProductAdapter(this)
     private val productSearchAdapter = ProductSearchAdapter()
 
-    private var currentPage: Int = DEFAULT_PAGE
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
@@ -37,53 +35,57 @@ class MainActivity : AppCompatActivity() {
         initFavoriteProductRecyclerView()
         initTotalProductRecyclerView()
 
-        viewModel.getTotalProducts(DEFAULT_PAGE)
+        viewModel.getTotalProducts()
     }
 
     private fun bindViews() {
         binding.tvOnePlusOne.setOnClickListener {
             productSearchAdapter.clearProducts()
             resetSaleTypeButtonBackground()
+            viewModel.currentPage = DEFAULT_PAGE
 
             if (viewModel.getSaleType() != ONE_PLUS_ONE) {
                 changeSaleTypeButtonBackground(it)
             }
 
             viewModel.setSaleType(ONE_PLUS_ONE)
-            viewModel.getTotalProducts(DEFAULT_PAGE)
+            viewModel.getTotalProducts()
         }
 
         binding.tvTwoPlusOne.setOnClickListener {
             productSearchAdapter.clearProducts()
             resetSaleTypeButtonBackground()
+            viewModel.currentPage = DEFAULT_PAGE
 
             if (viewModel.getSaleType() != TWO_PLUS_ONE) {
                 changeSaleTypeButtonBackground(it)
             }
             viewModel.setSaleType(TWO_PLUS_ONE)
-            viewModel.getTotalProducts(DEFAULT_PAGE)
+            viewModel.getTotalProducts()
         }
 
         binding.tvThreePlusOne.setOnClickListener {
             productSearchAdapter.clearProducts()
             resetSaleTypeButtonBackground()
+            viewModel.currentPage = DEFAULT_PAGE
 
             if (viewModel.getSaleType() != THREE_PLUS_ONE) {
                 changeSaleTypeButtonBackground(it)
             }
             viewModel.setSaleType(THREE_PLUS_ONE)
-            viewModel.getTotalProducts(DEFAULT_PAGE)
+            viewModel.getTotalProducts()
         }
 
         binding.tvFourPlusOne.setOnClickListener {
             productSearchAdapter.clearProducts()
             resetSaleTypeButtonBackground()
+            viewModel.currentPage = DEFAULT_PAGE
 
             if (viewModel.getSaleType() != FOUR_PLUS_ONE) {
                 changeSaleTypeButtonBackground(it)
             }
             viewModel.setSaleType(FOUR_PLUS_ONE)
-            viewModel.getTotalProducts(DEFAULT_PAGE)
+            viewModel.getTotalProducts()
         }
 
         binding.tvInputHint.setOnClickListener {
@@ -167,8 +169,8 @@ class MainActivity : AppCompatActivity() {
                     val itemTotalCount = scrolledAdapter.itemCount - 1
 
                     if (lastVisibleItemPosition == itemTotalCount) {
-                        currentPage++
-                        viewModel.getTotalProducts(currentPage)
+                        viewModel.currentPage++
+                        viewModel.getTotalProducts()
                     }
                 }
             })

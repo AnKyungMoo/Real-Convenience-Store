@@ -26,6 +26,7 @@ class MainViewModel(
         get() = _favoriteProducts
 
     private var saleType: String? = null
+    var currentPage = 1
 
     fun setSaleType(type: String?) {
         saleType =
@@ -38,7 +39,7 @@ class MainViewModel(
 
     fun getSaleType(): String? = saleType
 
-    fun getTotalProducts(currentPage: Int) {
+    fun getTotalProducts() {
         viewModelScope.launch {
             val productDto = NetworkModule.convenienceStoreApi.getProducts(
                 saleType = saleType,
