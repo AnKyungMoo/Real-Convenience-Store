@@ -16,7 +16,7 @@ import kotlinx.coroutines.launch
 class DetailViewModel(
     private val database: AppDatabase,
 ) : ViewModel() {
-    private val _isFavoriteProduct = MutableLiveData<Boolean>()
+    private val _isFavoriteProduct = MutableLiveData(false)
     val isFavoriteProduct: LiveData<Boolean>
         get() = _isFavoriteProduct
 
@@ -24,16 +24,14 @@ class DetailViewModel(
     val similarProducts: LiveData<List<ProductUiModel>>
         get() = _similarProducts
 
-    private val _switchFavoriteProductState = MutableLiveData<Boolean>()
+    private val _switchFavoriteProductState = MutableLiveData(false)
     val switchFavoriteProductState: LiveData<Boolean>
         get() = _switchFavoriteProductState
 
-    var currentPage: Int = 1
-    var needLoadMore: Boolean = true
-
     fun checkFavoriteProduct(productName: String?, storeName: String?) {
         CoroutineScope(Dispatchers.IO).launch {
-            _isFavoriteProduct.postValue(isFavoriteProduct(productName = productName, storeName = storeName))
+            _isFavoriteProduct.value =
+                isFavoriteProduct(productName = productName, storeName = storeName)
         }
     }
 
@@ -46,24 +44,21 @@ class DetailViewModel(
             .isExistFavoriteProduct(productName, storeName) > 0
     }
 
-    fun getSimilarProducts(productName: String?) {
+    fun getSimilarProducts(currentPage: Int, productName: String?) {
         viewModelScope.launch {
-            val productDTO = NetworkModule.convenienceStoreApi.getProducts(
+            val products = NetworkModule.convenienceStoreApi.getProducts(
                 page = currentPage,
                 title = productName,
-            )
-
-            checkEndPage(productDTO.pageData.maxPage)
-
-            _similarProducts.value = productDTO.data.map {
+            ).data.map {
                 it.toProductUiModel()
             }
-        }
-    }
 
-    private fun checkEndPage(maxPage: Int?) {
-        if (currentPage == maxPage) {
-            needLoadMore = false
+            _similarProducts.value = products
+
+            /* TODO: max page를 체크하는 방법에 대해 고민해보자.. (중요) */
+//            if (currentPage == products.pageData.maxPage) {
+//                needLoadMore = false
+//            }
         }
     }
 
