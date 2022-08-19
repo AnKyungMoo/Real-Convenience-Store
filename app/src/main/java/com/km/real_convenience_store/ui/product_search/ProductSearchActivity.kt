@@ -2,9 +2,9 @@ package com.km.real_convenience_store.ui.product_search
 
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.TextView
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -13,7 +13,6 @@ import com.km.real_convenience_store.databinding.ActivityProductSearchBinding
 import com.km.real_convenience_store.dto.remote.ProductDTO
 import com.km.real_convenience_store.model.ProductUiModel
 import com.km.real_convenience_store.network.NetworkModule
-import com.km.real_convenience_store.ui.main.MainActivity
 import com.km.real_convenience_store.ui.product_search.adapter.ProductSearchAdapter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -23,25 +22,19 @@ import kotlinx.coroutines.withContext
 class ProductSearchActivity : AppCompatActivity() {
     private lateinit var binding: ActivityProductSearchBinding
     private val productSearchAdapter = ProductSearchAdapter()
-    private val viewModel: ProductSearchViewModel by viewModels()
+
+    private var saleType: String? = null
+    private var currentPage: Int = 1
+    private var needLoadMore: Boolean = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         binding = ActivityProductSearchBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        initViews()
 
-        bindViews()
-        bindObserverData()
         getFavoriteProduct()
-    }
-
-    private fun bindObserverData() {
-       viewModel.searchProducts.observe(this){ products ->
-           productSearchAdapter.addProducts(products)
-           binding.tvSearchResultCount.text =
-               "검색결과 ".plus("${productSearchAdapter.itemCount}").plus("건")
-       }
     }
 
     private fun getFavoriteProduct() {
@@ -49,12 +42,13 @@ class ProductSearchActivity : AppCompatActivity() {
 
         if(!productName.isNullOrEmpty()){
             binding.editProductSearch.setText(productName)
-            initPagingData()
+            needLoadMore = true
+            currentPage = 1
             searchAndApplyProducts()
         }
     }
 
-    private fun bindViews() {
+    private fun initViews() {
         binding.rvProducts.apply {
             adapter = productSearchAdapter
             layoutManager = LinearLayoutManager(this@ProductSearchActivity)
@@ -68,7 +62,7 @@ class ProductSearchActivity : AppCompatActivity() {
                     val itemTotalCount = scrolledAdapter.itemCount - 1
 
                     if (lastVisibleItemPosition == itemTotalCount) {
-                        viewModel.currentPage++
+                        currentPage++
                         searchAndApplyProducts()
                     }
                 }
@@ -77,89 +71,94 @@ class ProductSearchActivity : AppCompatActivity() {
 
         binding.btnSearch.setOnClickListener {
             productSearchAdapter.clearProducts()
-            initPagingData()
+            needLoadMore = true
+            currentPage = 1
             searchAndApplyProducts()
         }
 
         binding.btnOnePlusOne.setOnClickListener {
-            initPagingData()
-            productSearchAdapter.clearProducts()
             resetSaleTypeButtonBackground()
-
-            if (viewModel.getSaleType() != ONE_PLUS_ONE) {
+            productSearchAdapter.clearProducts()
+            needLoadMore = true
+            currentPage = 1
+            if (saleType != "1+1") {
+                saleType = "1+1"
                 changeSaleTypeButtonBackground(it)
+            } else {
+                saleType = null
             }
-
-            viewModel.setSaleType(ONE_PLUS_ONE)
             searchAndApplyProducts()
         }
-
         binding.btnTwoPlusOne.setOnClickListener {
-            initPagingData()
-            productSearchAdapter.clearProducts()
             resetSaleTypeButtonBackground()
-
-            if (viewModel.getSaleType() != TWO_PLUS_ONE) {
+            productSearchAdapter.clearProducts()
+            needLoadMore = true
+            currentPage = 1
+            if (saleType != "2+1") {
+                saleType = "2+1"
                 changeSaleTypeButtonBackground(it)
+            } else {
+                saleType = null
             }
-            viewModel.setSaleType(TWO_PLUS_ONE)
             searchAndApplyProducts()
         }
-
         binding.btnThreePlusOne.setOnClickListener {
-            initPagingData()
-            productSearchAdapter.clearProducts()
             resetSaleTypeButtonBackground()
-
-            if (viewModel.getSaleType() != THREE_PLUS_ONE) {
+            productSearchAdapter.clearProducts()
+            needLoadMore = true
+            currentPage = 1
+            if (saleType != "3+1") {
+                saleType = "3+1"
                 changeSaleTypeButtonBackground(it)
+            } else {
+                saleType = null
             }
-            viewModel.setSaleType(THREE_PLUS_ONE)
             searchAndApplyProducts()
         }
-
         binding.btnFourPlusOne.setOnClickListener {
-            initPagingData()
-            productSearchAdapter.clearProducts()
             resetSaleTypeButtonBackground()
-
-            if (viewModel.getSaleType() != FOUR_PLUS_ONE) {
+            productSearchAdapter.clearProducts()
+            needLoadMore = true
+            currentPage = 1
+            if (saleType != "4+1") {
+                saleType = "4+1"
                 changeSaleTypeButtonBackground(it)
+            } else {
+                saleType = null
             }
-            viewModel.setSaleType(FOUR_PLUS_ONE)
             searchAndApplyProducts()
         }
-    }
-
-    private fun initPagingData() {
-        viewModel.needLoadMore = true
-        viewModel.currentPage = DEFAULT_PAGE
     }
 
     private fun searchAndApplyProducts() {
-        viewModel.searchProducts(binding.editProductSearch.text.toString())
+        if (!needLoadMore) return
+
+        CoroutineScope(Dispatchers.Main).launch {
+            val products: List<ProductUiModel> =
+                searchProducts(binding.editProductSearch.text.toString())
+            productSearchAdapter.addProducts(products)
+            binding.tvSearchResultCount.text =
+                "검색결과 ".plus("${productSearchAdapter.itemCount}").plus("건")
+        }
     }
 
     private fun resetSaleTypeButtonBackground() {
         binding.btnOnePlusOne.apply {
-            initSaleTypeBackground(this)
+            setBackgroundResource(R.drawable.bg_black_stroke)
+            setTextColor(Color.BLACK)
         }
-
         binding.btnTwoPlusOne.apply {
-            initSaleTypeBackground(this)
+            setBackgroundResource(R.drawable.bg_black_stroke)
+            setTextColor(Color.BLACK)
         }
         binding.btnThreePlusOne.apply {
-            initSaleTypeBackground(this)
+            setBackgroundResource(R.drawable.bg_black_stroke)
+            setTextColor(Color.BLACK)
         }
-
         binding.btnFourPlusOne.apply {
-            initSaleTypeBackground(this)
+            setBackgroundResource(R.drawable.bg_black_stroke)
+            setTextColor(Color.BLACK)
         }
-    }
-
-    private fun initSaleTypeBackground(itemView: View) {
-        itemView.setBackgroundResource(R.drawable.bg_black_stroke)
-        (itemView as TextView).setTextColor(Color.BLACK)
     }
 
     private fun changeSaleTypeButtonBackground(itemView: View) {
@@ -167,13 +166,26 @@ class ProductSearchActivity : AppCompatActivity() {
         (itemView as TextView).setTextColor(Color.WHITE)
     }
 
+    private suspend fun searchProducts(productName: String): List<ProductUiModel> {
+        return withContext(Dispatchers.Default) {
+            val productDto = NetworkModule.convenienceStoreApi.getProducts(
+                title = productName,
+                saleType = saleType,
+                page = currentPage,
+            )
+
+            if (currentPage == productDto.pageData.maxPage) {
+                needLoadMore = false
+            }
+
+            productDto.data.map {
+                it.toProductUiModel()
+            }
+        }
+    }
+
     companion object {
         const val PRODUCT_NAME = "PRODUCT_NAME"
-        const val ONE_PLUS_ONE = "1+1"
-        const val TWO_PLUS_ONE = "2+1"
-        const val THREE_PLUS_ONE = "3+1"
-        const val FOUR_PLUS_ONE = "4+1"
-        const val DEFAULT_PAGE = 1
     }
 }
 
