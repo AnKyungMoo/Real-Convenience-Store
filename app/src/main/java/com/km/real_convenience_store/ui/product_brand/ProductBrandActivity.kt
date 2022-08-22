@@ -30,7 +30,7 @@ class ProductBrandActivity : AppCompatActivity() {
     private var currentPage: Int = 1
     private var needLoadMore: Boolean = true
 
-    private var convenienceStoreName = intent.getStringExtra(CONVENIENCE_STORE_NAME)
+    private lateinit var convenienceStoreName: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,8 +38,13 @@ class ProductBrandActivity : AppCompatActivity() {
         binding = ActivityProductBrandBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        getIntentData()
         bindViews()
         initViews()
+    }
+
+    private fun getIntentData() {
+        convenienceStoreName = intent.getStringExtra(CONVENIENCE_STORE_NAME) ?: ""
     }
 
     private fun bindViews() {
