@@ -4,10 +4,12 @@ import android.graphics.Color
 import android.os.Bundle
 import android.view.View
 import android.widget.TextView
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.km.real_convenience_store.R
+import com.km.real_convenience_store.common.ViewModelFactory
 import com.km.real_convenience_store.databinding.ActivityProductBrandBinding
 import com.km.real_convenience_store.model.ProductUiModel
 import com.km.real_convenience_store.network.NetworkModule
@@ -18,32 +20,44 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class ProductBrandActivity: AppCompatActivity() {
+class ProductBrandActivity : AppCompatActivity() {
     private lateinit var binding: ActivityProductBrandBinding
+    private val viewModel: ProductBrandViewModel by viewModels()
     private val productSearchAdapter = ProductSearchAdapter()
 
     private var saleType: String? = null
     private var currentPage: Int = 1
     private var needLoadMore: Boolean = true
 
-    private var convenienceStoreName: String = ""
+    private var convenienceStoreName: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         binding = ActivityProductBrandBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        setConvenienceStoreName()
+
+        getIntentData()
+        bindView()
         initViews()
+        observeData()
     }
 
-    private fun setConvenienceStoreName() {
-        convenienceStoreName = intent.extras?.getString(CONVENIENCE_STORE_NAME, "") ?: ""
+    private fun getIntentData() {
+        convenienceStoreName = intent.getStringExtra(CONVENIENCE_STORE_NAME)
+    }
+
+    private fun bindView() {
+        binding.tvBrandTitle.text = convenienceStoreName
+    }
+
+    private fun observeData() {
+        viewModel.searchProducts.observe(this) { product ->
+            productSearchAdapter.addProducts(product)
+        }
     }
 
     private fun initViews() {
-        binding.tvBrandTitle.text = convenienceStoreName
-
         binding.rvProducts.apply {
             adapter = productSearchAdapter
             layoutManager = LinearLayoutManager(this@ProductBrandActivity)
@@ -58,7 +72,12 @@ class ProductBrandActivity: AppCompatActivity() {
 
                     if (lastVisibleItemPosition == itemTotalCount) {
                         currentPage++
-                        searchAndApplyProducts()
+                        viewModel.searchProduct(
+                            productName = binding.editProductSearch.text.toString(),
+                            saleType = saleType,
+                            currentPage = currentPage,
+                            convenienceStoreName = convenienceStoreName
+                        )
                     }
                 }
             })
@@ -66,62 +85,76 @@ class ProductBrandActivity: AppCompatActivity() {
 
         binding.btnSearch.setOnClickListener {
             productSearchAdapter.clearProducts()
-            needLoadMore = true
+            viewModel.needLoadMore = true
             currentPage = 1
-            searchAndApplyProducts()
+            viewModel.searchProduct(
+                productName = binding.editProductSearch.text.toString(),
+                saleType = saleType,
+                currentPage = currentPage,
+                convenienceStoreName = convenienceStoreName
+            )
         }
 
         binding.btnOnePlusOne.setOnClickListener {
             resetSaleTypeButtonBackground()
             productSearchAdapter.clearProducts()
-            needLoadMore = true
+            viewModel.needLoadMore = true
             currentPage = 1
-            if (saleType != "1+1") {
-                saleType = "1+1"
-                changeSaleTypeButtonBackground(it)
-            } else {
-                saleType = null
-            }
-            searchAndApplyProducts()
+            setSaleType("1+1", it)
+            viewModel.searchProduct(
+                productName = binding.editProductSearch.text.toString(),
+                saleType = saleType,
+                currentPage = currentPage,
+                convenienceStoreName = convenienceStoreName
+            )
         }
         binding.btnTwoPlusOne.setOnClickListener {
             resetSaleTypeButtonBackground()
             productSearchAdapter.clearProducts()
-            needLoadMore = true
+            viewModel.needLoadMore = true
             currentPage = 1
-            if (saleType != "2+1") {
-                saleType = "2+1"
-                changeSaleTypeButtonBackground(it)
-            } else {
-                saleType = null
-            }
-            searchAndApplyProducts()
+            setSaleType("2+1", it)
+            viewModel.searchProduct(
+                productName = binding.editProductSearch.text.toString(),
+                saleType = saleType,
+                currentPage = currentPage,
+                convenienceStoreName = convenienceStoreName
+            )
         }
         binding.btnThreePlusOne.setOnClickListener {
             resetSaleTypeButtonBackground()
             productSearchAdapter.clearProducts()
-            needLoadMore = true
+            viewModel.needLoadMore = true
             currentPage = 1
-            if (saleType != "3+1") {
-                saleType = "3+1"
-                changeSaleTypeButtonBackground(it)
-            } else {
-                saleType = null
-            }
-            searchAndApplyProducts()
+            setSaleType("3+1", it)
+            viewModel.searchProduct(
+                productName = binding.editProductSearch.text.toString(),
+                saleType = saleType,
+                currentPage = currentPage,
+                convenienceStoreName = convenienceStoreName
+            )
         }
         binding.btnFourPlusOne.setOnClickListener {
             resetSaleTypeButtonBackground()
             productSearchAdapter.clearProducts()
-            needLoadMore = true
+            viewModel.needLoadMore = true
             currentPage = 1
-            if (saleType != "4+1") {
-                saleType = "4+1"
-                changeSaleTypeButtonBackground(it)
-            } else {
-                saleType = null
-            }
-            searchAndApplyProducts()
+            setSaleType("4+1", it)
+            viewModel.searchProduct(
+                productName = binding.editProductSearch.text.toString(),
+                saleType = saleType,
+                currentPage = currentPage,
+                convenienceStoreName = convenienceStoreName
+            )
+        }
+    }
+
+    private fun setSaleType(inputSaleType: String, view: View) {
+        if (saleType != inputSaleType) {
+            saleType = inputSaleType
+            changeSaleTypeButtonBackground(view)
+        } else {
+            saleType = null
         }
     }
 
@@ -147,35 +180,6 @@ class ProductBrandActivity: AppCompatActivity() {
     private fun changeSaleTypeButtonBackground(itemView: View) {
         itemView.setBackgroundResource(R.drawable.bg_sale_type_black_button)
         (itemView as TextView).setTextColor(Color.WHITE)
-    }
-
-    private fun searchAndApplyProducts() {
-        if (!needLoadMore) return
-
-        CoroutineScope(Dispatchers.Main).launch {
-            val products: List<ProductUiModel> =
-                searchProducts(binding.editProductSearch.text.toString())
-            productSearchAdapter.addProducts(products)
-        }
-    }
-
-    private suspend fun searchProducts(productName: String): List<ProductUiModel> {
-        return withContext(Dispatchers.Default) {
-            val productDto = NetworkModule.convenienceStoreApi.getProducts(
-                title = productName,
-                saleType = saleType,
-                page = currentPage,
-                store = convenienceStoreName,
-            )
-
-            if (currentPage == productDto.pageData.maxPage) {
-                needLoadMore = false
-            }
-
-            productDto.data.map {
-                it.toProductUiModel()
-            }
-        }
     }
 
     companion object {
