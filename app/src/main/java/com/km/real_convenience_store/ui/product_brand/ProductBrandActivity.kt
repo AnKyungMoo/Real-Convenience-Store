@@ -25,9 +25,7 @@ class ProductBrandActivity : AppCompatActivity() {
     private val viewModel: ProductBrandViewModel by viewModels()
     private val productSearchAdapter = ProductSearchAdapter()
 
-    private var saleType: String? = null
     private var currentPage: Int = 1
-    private var needLoadMore: Boolean = true
 
     private var convenienceStoreName: String? = null
 
@@ -55,6 +53,10 @@ class ProductBrandActivity : AppCompatActivity() {
         viewModel.searchProducts.observe(this) { product ->
             productSearchAdapter.addProducts(product)
         }
+
+        viewModel.changeSaleType.observe(this) { view ->
+            changeSaleTypeButtonBackground(view)
+        }
     }
 
     private fun initViews() {
@@ -74,7 +76,6 @@ class ProductBrandActivity : AppCompatActivity() {
                         currentPage++
                         viewModel.searchProduct(
                             productName = binding.editProductSearch.text.toString(),
-                            saleType = saleType,
                             currentPage = currentPage,
                             convenienceStoreName = convenienceStoreName
                         )
@@ -89,7 +90,6 @@ class ProductBrandActivity : AppCompatActivity() {
             currentPage = 1
             viewModel.searchProduct(
                 productName = binding.editProductSearch.text.toString(),
-                saleType = saleType,
                 currentPage = currentPage,
                 convenienceStoreName = convenienceStoreName
             )
@@ -100,10 +100,9 @@ class ProductBrandActivity : AppCompatActivity() {
             productSearchAdapter.clearProducts()
             viewModel.needLoadMore = true
             currentPage = 1
-            setSaleType("1+1", it)
+            viewModel.setSaleType("1+1", it)
             viewModel.searchProduct(
                 productName = binding.editProductSearch.text.toString(),
-                saleType = saleType,
                 currentPage = currentPage,
                 convenienceStoreName = convenienceStoreName
             )
@@ -113,10 +112,9 @@ class ProductBrandActivity : AppCompatActivity() {
             productSearchAdapter.clearProducts()
             viewModel.needLoadMore = true
             currentPage = 1
-            setSaleType("2+1", it)
+            viewModel.setSaleType("2+1", it)
             viewModel.searchProduct(
                 productName = binding.editProductSearch.text.toString(),
-                saleType = saleType,
                 currentPage = currentPage,
                 convenienceStoreName = convenienceStoreName
             )
@@ -126,10 +124,9 @@ class ProductBrandActivity : AppCompatActivity() {
             productSearchAdapter.clearProducts()
             viewModel.needLoadMore = true
             currentPage = 1
-            setSaleType("3+1", it)
+            viewModel.setSaleType("3+1", it)
             viewModel.searchProduct(
                 productName = binding.editProductSearch.text.toString(),
-                saleType = saleType,
                 currentPage = currentPage,
                 convenienceStoreName = convenienceStoreName
             )
@@ -139,47 +136,44 @@ class ProductBrandActivity : AppCompatActivity() {
             productSearchAdapter.clearProducts()
             viewModel.needLoadMore = true
             currentPage = 1
-            setSaleType("4+1", it)
+            viewModel.setSaleType("4+1", it)
             viewModel.searchProduct(
                 productName = binding.editProductSearch.text.toString(),
-                saleType = saleType,
                 currentPage = currentPage,
                 convenienceStoreName = convenienceStoreName
             )
         }
     }
 
-    private fun setSaleType(inputSaleType: String, view: View) {
-        if (saleType != inputSaleType) {
-            saleType = inputSaleType
-            changeSaleTypeButtonBackground(view)
-        } else {
-            saleType = null
-        }
-    }
 
     private fun resetSaleTypeButtonBackground() {
         binding.btnOnePlusOne.apply {
-            setBackgroundResource(R.drawable.bg_black_stroke)
-            setTextColor(Color.BLACK)
+            setUnselectBackground(binding.btnOnePlusOne)
+
         }
         binding.btnTwoPlusOne.apply {
-            setBackgroundResource(R.drawable.bg_black_stroke)
-            setTextColor(Color.BLACK)
+            setUnselectBackground(binding.btnTwoPlusOne)
+
         }
         binding.btnThreePlusOne.apply {
-            setBackgroundResource(R.drawable.bg_black_stroke)
-            setTextColor(Color.BLACK)
+            setUnselectBackground(binding.btnThreePlusOne)
+
         }
         binding.btnFourPlusOne.apply {
-            setBackgroundResource(R.drawable.bg_black_stroke)
-            setTextColor(Color.BLACK)
+            setUnselectBackground(binding.btnFourPlusOne)
         }
     }
 
-    private fun changeSaleTypeButtonBackground(itemView: View) {
-        itemView.setBackgroundResource(R.drawable.bg_sale_type_black_button)
-        (itemView as TextView).setTextColor(Color.WHITE)
+    private fun setUnselectBackground(view: TextView) {
+        view.setBackgroundResource(R.drawable.bg_black_stroke)
+        view.setTextColor(Color.BLACK)
+    }
+
+    private fun changeSaleTypeButtonBackground(itemView: View?) {
+        if (itemView != null) {
+            itemView.setBackgroundResource(R.drawable.bg_sale_type_black_button)
+            (itemView as TextView).setTextColor(Color.WHITE)
+        }
     }
 
     companion object {

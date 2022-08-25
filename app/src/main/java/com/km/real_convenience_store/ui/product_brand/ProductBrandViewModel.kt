@@ -1,6 +1,7 @@
 package com.km.real_convenience_store.ui.product_brand
 
 import android.util.Log
+import android.view.View
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -20,11 +21,14 @@ class ProductBrandViewModel : ViewModel() {
     val searchProducts: LiveData<List<ProductUiModel>>
         get() = _searchProducts
 
+    private val _changeSaleType = MutableLiveData<View?>()
+    val changeSaleType: LiveData<View?>
+        get() = _changeSaleType
+
     var needLoadMore: Boolean = true
+    private var saleType: String? = null
 
-    //private var currentPage: Int = 1
-
-    fun searchProduct(productName: String?, saleType: String?, currentPage: Int ,convenienceStoreName: String?) {
+    fun searchProduct(productName: String?, currentPage: Int, convenienceStoreName: String?) {
         viewModelScope.launch {
             if (!needLoadMore) return@launch
 
@@ -35,8 +39,6 @@ class ProductBrandViewModel : ViewModel() {
                 store = convenienceStoreName,
             )
 
-            Log.d("@@Test", productDto.toString())
-
             if (currentPage == productDto.pageData.maxPage) {
                 needLoadMore = false
             }
@@ -44,6 +46,16 @@ class ProductBrandViewModel : ViewModel() {
             _searchProducts.value = productDto.data.map {
                 it.toProductUiModel()
             }
+        }
+    }
+
+    fun setSaleType(inputSaleType: String, view: View) {
+        if (saleType != inputSaleType) {
+            saleType = inputSaleType
+            _changeSaleType.value = view
+        } else {
+            saleType = null
+            _changeSaleType.value = null
         }
     }
 }
