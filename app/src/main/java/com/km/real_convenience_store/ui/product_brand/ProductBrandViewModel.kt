@@ -27,8 +27,9 @@ class ProductBrandViewModel : ViewModel() {
 
     var needLoadMore: Boolean = true
     private var saleType: String? = null
+    var currentPage: Int = 1
 
-    fun searchProduct(productName: String?, currentPage: Int, convenienceStoreName: String?) {
+    fun searchProduct(productName: String?, convenienceStoreName: String?) {
         viewModelScope.launch {
             if (!needLoadMore) return@launch
 
@@ -49,7 +50,7 @@ class ProductBrandViewModel : ViewModel() {
         }
     }
 
-    fun setSaleType(inputSaleType: String, view: View) {
+    fun setSaleType(inputSaleType: String, view: View?) {
         if (saleType != inputSaleType) {
             saleType = inputSaleType
             _changeSaleType.value = view
