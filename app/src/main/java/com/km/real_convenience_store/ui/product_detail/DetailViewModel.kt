@@ -24,14 +24,13 @@ class DetailViewModel(
     val similarProducts: LiveData<List<ProductUiModel>>
         get() = _similarProducts
 
-    private val _switchFavoriteProductState = MutableLiveData(false)
+    private val _switchFavoriteProductState = MutableLiveData<Boolean>()
     val switchFavoriteProductState: LiveData<Boolean>
         get() = _switchFavoriteProductState
 
     fun checkFavoriteProduct(productName: String?, storeName: String?) {
         CoroutineScope(Dispatchers.IO).launch {
-            _isFavoriteProduct.value =
-                isFavoriteProduct(productName = productName, storeName = storeName)
+            _isFavoriteProduct.postValue(isFavoriteProduct(productName = productName, storeName = storeName))
         }
     }
 

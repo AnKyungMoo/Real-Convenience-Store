@@ -178,21 +178,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun resetSaleTypeButtonBackground() {
-        binding.tvOnePlusOne.apply {
-            initSaleTypeBackground(this)
-        }
-
-        binding.tvTwoPlusOne.apply {
-            initSaleTypeBackground(this)
-        }
-
-        binding.tvThreePlusOne.apply {
-            initSaleTypeBackground(this)
-        }
-
-        binding.tvFourPlusOne.apply {
-            initSaleTypeBackground(this)
-        }
+        initSaleTypeBackground(binding.tvOnePlusOne)
+        initSaleTypeBackground(binding.tvTwoPlusOne)
+        initSaleTypeBackground(binding.tvThreePlusOne)
+        initSaleTypeBackground(binding.tvFourPlusOne)
     }
 
     private fun initSaleTypeBackground(itemView: View) {
